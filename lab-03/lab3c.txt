@@ -1,0 +1,70 @@
+`timescale 1ns / 1ps
+`include "mux4to1.sv" // To use 4:1 Mux
+
+// Top Level Structural 8:1 mux using tw0 4:1 mux, two AND gates, one inverter, and one OR gate
+module mux8to1(input logic in0, in1, in2, in3, in4, in5, in6, in7, input logic [2:0] s, output logic y);
+
+    // Internal signals
+    logic n1, n2, n3;
+    logic n4, n5;
+
+    // First level internal signals
+    mux4to1 firstMux4(in0, in1, in2, in3, s[1:0], n1);
+    mux4to1 secondMux4(in4, in5, in6, in7, s[1:0], n2);
+    inv inverter(s[2], n3);
+    
+    // Second level internal signals
+    and2 firstAnd(n1, n3, n4);
+    and2 secondAnd(n2, s[2], n5);
+    
+    // Third level output
+    or2 firstOr(n4, n5, y);
+    
+endmodule
+
+// Low level AND module implementation
+module and2(input logic a, b, output logic y);
+    assign y = a & b;
+endmodule
+
+// Low level OR module implementation
+module or2(input logic a, b, output logic y);
+    assign y = a | b;
+endmodule
+
+// Low level Inverter module implementation
+module inv(input logic a, output logic y);
+    assign y = ~a;
+endmodule
+
+
+// Test Bench for the Top Level module
+module tbMux8to1();
+
+    // Internal signals
+    logic in0, in1, in2, in3, in4, in5, in6, in7;
+    logic [2:0] s;
+    logic y;
+    
+    // Instantating unit under test
+    mux8to1 uut(in0, in1, in2, in3, in4, in5, in6, in7, s, y);
+    
+    initial begin
+    
+        $monitor("in0 = %b, in1 = %b, in2 = %b, in3 = %b, in4 = %b, in5 = %b, in6 = %b, in7 = %b, select input = %b, output = %b", in0, in1, in2, in3, in4, in5, in6, in7, s, y);
+        in0 = $random;
+        in1 = $random;
+        in2 = $random;
+        in3 = $random;
+        in4 = $random;
+        in5 = $random;
+        in6 = $random;
+        in7 = $random;
+        
+        for(int i = 0; i < 8; i=i+1) begin
+            s = i; #10;
+        end
+        
+    end
+    
+endmodule

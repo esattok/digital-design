@@ -1,0 +1,40 @@
+`timescale 1ns / 1ps
+
+// 4:1 multiplexer implementation in behavioral style
+module mux4to1(input logic [3:0] a, b, c, d, input logic [1:0] slct, output logic [3:0] out);
+    
+    // Nested conditional assignment will aloow the multiplexer to select the outmut among inputs
+    assign out = slct[1] ? (slct[0] ? d : c) : (slct[0] ? b : a);
+    
+endmodule
+
+// TestBench for the 4: multiplexer
+module tbMux4to1();
+
+    // Declaring the internal signals;
+    logic [3:0] a, b, c, d;
+    logic [1:0] slct;
+    logic [3:0] out;
+    
+    // Instantiating the unit under test
+    mux4to1 sampleMux4to1(a, b, c, d, slct, out);
+    
+    initial begin
+    
+        // monitoring the signals whenever one of them changes
+        $monitor("a = %b, b = %b, c = %b, d = %b, select input = %b, output = %b", a, b, c, d, slct, out);
+        
+        // Initially the inputs are random and select input will change gradually
+        a = $random;
+        b = $random;
+        c = $random;
+        d = $random;
+        
+        // Change dthe select input in order to observe the change at output
+        for (int i = 0; i < 4; i=i+1) begin
+            slct = i; #10;
+        end
+        
+    end
+    
+endmodule

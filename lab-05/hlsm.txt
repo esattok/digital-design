@@ -1,0 +1,59 @@
+`timescale 1ns / 1ps
+
+module ReduceSumHLSM(input logic clk, btnC, btnU, btnL, btnR,
+                     input logic [7:0] writeData,
+                     input logic [3:0] address,
+                     output logic [15:0] led,
+                     output [6:0]seg, logic dp,
+                     output [3:0] an);
+                     
+    // Defining debounced button signals
+    logic buttonCenter, buttonUp, buttonLeft, buttonRight;
+    debounce(clk, btnC, buttonCenter);
+    debounce(clk, btnU, buttonUp);
+    debounce(clk, btnL, buttonLeft);
+    debounce(clk, btnR, buttonRight);
+    
+    // Signal that keeps track of the memory address that is initially 0
+    logic [3:0] adr = 0;
+    
+    // Defining the read addresses
+    logic [3:0] readAddress1 = adr;
+    logic [3:0] readAddress2;
+    
+    // Definig the read datas
+    logic [7:0] readData1, readData2;
+    
+    // Instantiating the RAM
+    memory RAM(clk, buttonUp, address, readAddress1, readAddress2, writeData, readData1, readData2);
+    
+    // Instantiating 7 segment display 
+    SevSeg_4digit SevSeg(clk, readAddress1, x, readData1[7:4], readData1[3:0], seg, dp, an);
+    
+    
+    // Instantiating the ReduceSum module
+    ReduceSum Sum(readData2, led);
+    
+    
+                     
+    always_ff@ (posedge clk) begin
+        if (buttonRight) begin
+            if (adr == 15) 
+                adr = 0;
+            
+            else 
+                adr = adr + 1;
+        end
+        
+        else if (buttonLeft) begin
+            if (adr == 0) 
+                adr = 15;
+            
+            else 
+                adr = adr - 1;
+        end
+    end
+    
+    
+
+endmodule

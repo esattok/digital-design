@@ -1,0 +1,75 @@
+`timescale 1ns / 1ps
+
+// Top level module implementation
+module fullAdderStructural(input logic a, b, cin, output logic sum, cout);
+
+    // Internal nodes
+    logic n1, n2, n3;
+    
+    // Assigning the output sum using structural design
+    xor2 firstXor(a, b, n1);
+    xor2 secondXor(n1, cin, sum);
+    
+    // Assigning the output cout using structural design
+    and2 firstAnd(a, b, n2);
+    and2 secondAnd(n1, cin, n3);
+    or2 firstOr(n2, n3, cout);
+    
+endmodule
+
+// Low level and gate module for the structural implementation of the full adder
+module and2(input logic a, b, output logic y);
+    assign y = a & b;
+endmodule
+
+// Low level or gate module for the structural implementation of the full adder
+module or2(input logic a, b, output logic y);
+    assign y = a | b;
+endmodule
+
+// Low level xor gate module for the structural implementation of the full adder
+module xor2(input logic a, b, output logic y);
+    assign y = a ^ b;
+endmodule
+
+
+// TestBench for the Structural Full Adder Module
+module testbenchPartB();
+    
+    // Internal input variables fot he uut
+    logic a, b, cin;
+    
+    // Internal output variables for the uut
+    logic sum, cout;
+    
+    // Instanciating the unit under test
+    fullAdderStructural uut(a, b, cin, sum, cout);
+    
+    // Applying inputs and checking the outputs
+    initial begin
+        a = 0; b = 0; cin = 0; #10;
+        if (sum === 0 && cout === 0) $display("000 Correct");
+        
+        a = 0; b = 0; cin = 1; #10;
+        if (sum === 1 && cout === 0) $display("001 Correct");
+        
+        a = 0; b = 1; cin = 0; #10;
+        if (sum === 1 && cout === 0) $display("010 Correct");
+        
+        a = 0; b = 1; cin = 1; #10;
+        if (sum === 0 && cout === 1) $display("011 Correct");
+        
+        a = 1; b = 0; cin = 0; #10;
+        if (sum === 1 && cout === 0) $display("100 Correct");
+        
+        a = 1; b = 0; cin = 1; #10;
+        if (sum === 0 && cout === 1) $display("101 Correct");
+        
+        a = 1; b = 1; cin = 0; #10;
+        if (sum === 0 && cout === 1) $display("110 Correct");
+        
+        a = 1; b = 1; cin = 1; #10;
+        if (sum === 1 && cout === 1) $display("111 Correct");
+    end
+    
+endmodule

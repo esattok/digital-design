@@ -1,0 +1,15 @@
+`timescale 1ns / 1ps
+
+
+// Top level FSM that simulates the traffic light controller with the 3 seconds clock period
+module clockedTrafficFSM(input logic clk, input logic reset, input logic sa, input logic sb, output logic [2:0] la, output logic [2:0] lb);
+
+    logic clk3sec; // Local signl that keeps the clock with 3 seconds period
+    
+    // Wrapper for the Clock Counter
+    clockCounter wrapper(clk, clk3sec);
+    
+    // Generating the clocked FSM
+    trafficFSM fsm(clk3sec, reset, sa, sb, la, lb);
+    
+endmodule

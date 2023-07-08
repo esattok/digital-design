@@ -1,0 +1,55 @@
+`timescale 1ns / 1ps
+
+// Low level module that outputs the sum of the entered array elements
+module ReduceSum(input logic [7:0] data, output logic [15:0] led);
+    logic [15:0] sum = 0;
+    
+    // Upgrade the sum according to memory array items
+    always@* begin
+        sum = sum + data;
+    end
+    
+    assign led = sum;
+    
+endmodule
+
+
+// TestBench for the ReduceSum module
+module ReduceSumTB();
+    
+    // Local Signals
+    logic [7:0] data;
+    logic [15:0] led;
+    
+    
+    // Instantiating device under test
+    ReduceSum dut(data, led);
+    
+    // First assign all memory array values to 0 to avoud X values
+    
+    
+    // Testing the output according to the inputs
+    initial begin 
+        data = 5; #10;
+        data = 20; #10;
+        data = 10; #10;
+        data = 15;  #10;
+        data = 120;  #10;
+        data = 1;  #10;
+        data = 9; #10;
+    end
+    
+endmodule
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,90 @@
+`timescale 1ns / 1ps
+
+// Top level module for the Full Subtractor
+module fullSubtractorStructural(input logic a, b, bin, output logic d, bout);
+
+    // Internal signals
+    logic n1, n2, n3;
+    
+    // Assigning the output d
+    halfSubtractor firstHalf(a, b, n1, n2);
+    halfSubtractor secondHalf(n1, bin, d, n3);
+    
+    // Assigning the output bout
+    or2 firstOr(n3, n2, bout);
+
+endmodule
+
+// Low level half subtractor module for the structural implementation of the full subtractor
+module halfSubtractor(input logic a, b, output logic d, bout);
+    // Internal signals
+    logic n1, n2;
+    
+    // Assigning the d output
+    xor2 firstXor(a, b, d);
+    
+    // Assigning the bout output
+    inv firstInv(a, n1);
+    and2 firstAnd(n1, b, bout);
+endmodule
+
+// Low level not gate module for the structural implementation of the full subtractor
+module inv(input logic a, output logic y);
+    assign y = ~a;
+endmodule
+
+// Low level and gate module for the structural implementation of the full subtractor
+module and2(input logic a, b, output logic y);
+    assign y = a & b;
+endmodule
+
+// Low level or gate module for the structural implementation of the full subtractor
+module or2(input logic a, b, output logic y);
+    assign y = a | b;
+endmodule
+
+// Low level xor gate module for the structural implementation of the full subtractor
+module xor2(input logic a, b, output logic y);
+    assign y = a ^ b;
+endmodule
+
+// TestBench module for the top level full subtractor
+module testbenchPartC();
+    
+    // Assigning the interal signals
+    logic a, b, bin;
+    logic d, bout;
+    
+    // Instantiating the uut
+    fullSubtractorStructural uut(a, b, bin, d, bout);
+    
+    // Applying inputs and checking the outputs
+    initial begin
+        
+        a = 0; b = 0; bin = 0; #10;
+        if (d === 0 && bout === 0) $display("000 Correct");
+        
+        a = 0; b = 0; bin = 1; #10;
+        if (d === 1 && bout === 1) $display("001 Correct");
+        
+        a = 0; b = 1; bin = 0; #10;
+        if (d === 1 && bout === 1) $display("010 Correct");
+        
+        a = 0; b = 1; bin = 1; #10;
+        if (d === 0 && bout === 1) $display("011 Correct");
+        
+        a = 1; b = 0; bin = 0; #10;
+        if (d === 1 && bout === 0) $display("100 Correct");
+        
+        a = 1; b = 0; bin = 1; #10;
+        if (d === 0 && bout === 0) $display("101 Correct");
+        
+        a = 1; b = 1; bin = 0; #10;
+        if (d === 0 && bout === 0) $display("110 Correct");
+        
+        a = 1; b = 1; bin = 1; #10;
+        if (d === 1 && bout === 1) $display("111 Correct");
+        
+    end
+    
+endmodule

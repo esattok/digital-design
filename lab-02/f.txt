@@ -1,0 +1,42 @@
+`timescale 1ns / 1ps
+`include "fullAdderBehavioral.sv" // Including the 1-bit full adders module to the file
+
+module adderTwoBit(input logic a0, b0, a1, b1, cin, output logic s0, s1, cout);
+
+    // Internal signals
+    // n1 is the cout of the first 1-bit adder
+    logic n1; 
+    
+    // Assigns the first sum
+    fullAdderBehavioral firstAdder(a0, b0, cin, s0, n1);
+    
+    // Assigns the second sum and the final carry out
+    fullAdderBehavioral secondAdder(a1, b1, n1, s1, cout);
+
+endmodule
+
+
+// TestBench for the structural 2-bit full adder
+module testbench2Bit();
+
+    // Internal input variables fot he uut
+    logic a0, b0, a1, b1, cin;
+    
+    // Internal output variables for the uut
+    logic s0, s1, cout;
+    
+    // Instanciating the unit under test
+    adderTwoBit uut(a0, b0, a1, b1, cin, s0, s1, cout);
+    
+    // Applying inputs and checking the outputs
+    initial begin
+        $monitor(a0, b0, a1, b1, cin);
+        for (int i = 0; i < 32; i = i+1) begin
+            {a0, b0, a1 ,b1, cin} = i; #10;
+            $display("Value of s0 = ", s0);
+            $display("Value of s1 = ", s1);
+            $display("Value of cout = ", cout);
+            $display();
+        end
+    end
+endmodule

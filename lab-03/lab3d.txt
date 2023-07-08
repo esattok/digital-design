@@ -1,0 +1,22 @@
+`timescale 1ns / 1ps
+`include "mux8to1.sv"
+
+// 8:1 Mux implementation for a function
+module functionMux8to1(input logic [3:0] s, output logic y);
+
+    logic n1; // n1 is ~s[0]
+    inv inverter(s[0], n1);
+    
+    // Since it is a function the inputs are known
+    logic in0 = 1;
+    logic in1 = s[0];
+    logic in2 = n1;
+    logic in3 = s[0];
+    logic in4 = n1;
+    logic in5 = 1;
+    logic in6 = 0;
+    logic in7 = s[0];
+    
+    mux8to1 multiplexer(in0, in1, in2, in3, in4, in5, in6, in7, s[3:1], y);
+
+endmodule

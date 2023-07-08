@@ -1,0 +1,88 @@
+`timescale 1ns / 1ps
+
+
+// Low level FSM that simulates a traffic light controller
+module trafficFSM(input logic clk, input logic reset, input logic sa, input logic sb, output logic [2:0] la, output logic [2:0] lb);
+    typedef enum logic [2:0] {S0, S1, S2, S3, S4, S5, S6, S7} statetype;
+    statetype [2:0] currentState, nextState;
+    
+    // Parameters for the outputs
+    parameter red = 3'b111;
+    parameter green = 3'b011;
+    parameter yellow = 3'b001;
+    
+    // State Register
+    always_ff@ (posedge clk, posedge reset) begin
+        if (reset)
+            currentState <= S0;
+        else
+            currentState <= nextState;
+    end
+    
+    // Next State Logic
+    always_comb
+        case(currentState)
+            S0: if (sa) nextState = S0;
+                else nextState = S1;
+            S1: nextState = S2;
+            S2: nextState = S3;
+            S3: nextState = S4;
+            S4: if (sb) nextState = S4;
+                else nextState = S5;
+            S5: nextState = S6;
+            S6: nextState = S7;
+            S7: nextState = S0;
+            default: nextState = S0;
+        endcase
+        
+    // Output Logic
+    always_comb
+        case(currentState)
+            S0: {la, lb} = {green, red};
+            S1: {la, lb} = {yellow, red};
+            S2: {la, lb} = {red, red};
+            S3: {la, lb} = {red, yellow};
+            S4: {la, lb} = {red, green};
+            S5: {la, lb} = {red, yellow};
+            S6: {la, lb} = {red, red};
+            S7: {la, lb} = {yellow, red};
+        endcase
+endmodule
+
+
+// TestBench for the Traffic Light Controller
+module fsmTB();
+    
+    // Local Signals
+    logic clock, reset;
+    logic sa, sb;
+    logic [2:0] la, lb;
+    
+    // Instantiating the device under test
+    trafficFSM dut(clock, reset, sa, sb, la, lb);
+    
+    // Managing the clock
+    always begin
+        clock = 1; #5;
+        clock = 0; #5;
+    end
+    
+    // Testing the FSM for the all possible input combinations
+    initial begin
+        // Testings
+        reset = 1; sa = 0; sb = 0; #10;
+        reset = 0; sa = 1; sb = 1; #10;
+        sa = 1; sb = 0; #10;
+        sa = 0; sb = 0; #10;
+        sa = 0; sb = 1; #10;
+        sa = 1; sb = 0; #10;
+        sa = 1; sb = 1; #10;
+        sa = 0; sb = 1; #10;
+        sa = 0; sb = 1; #10;
+        sa = 0; sb = 0; #10;
+        sa = 1; sb = 1; #10;
+        sa = 0; sb = 0; #10;
+        sa = 1; sb = 0; #10;
+    end
+    
+endmodule

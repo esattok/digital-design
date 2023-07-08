@@ -1,0 +1,50 @@
+`timescale 1ns / 1ps
+
+
+module fullAdderBehavioral(input logic a, b, cin, output logic sum, cout);
+
+    assign sum = (a ^ b) ^ cin;
+    assign cout = (a & b) | cin & (a ^ b);
+
+endmodule
+
+// TestBench for the Behavioral Full Adder Module
+module testbenchPartA();
+    
+    // Internal input variables fot he uut
+    logic a, b, cin;
+    
+    // Internal output variables for the uut
+    logic sum, cout;
+    
+    // Instanciating the unit under test
+    fullAdderBehavioral uut(a, b, cin, sum, cout);
+    
+    // Applying inputs and checking the outputs
+    initial begin
+        a = 0; b = 0; cin = 0; #10;
+        if (sum === 0 && cout === 0) $display("000 Correct");
+        
+        a = 0; b = 0; cin = 1; #10;
+        if (sum === 1 && cout === 0) $display("001 Correct");
+        
+        a = 0; b = 1; cin = 0; #10;
+        if (sum === 1 && cout === 0) $display("010 Correct");
+        
+        a = 0; b = 1; cin = 1; #10;
+        if (sum === 0 && cout === 1) $display("011 Correct");
+        
+        a = 1; b = 0; cin = 0; #10;
+        if (sum === 1 && cout === 0) $display("100 Correct");
+        
+        a = 1; b = 0; cin = 1; #10;
+        if (sum === 0 && cout === 1) $display("101 Correct");
+        
+        a = 1; b = 1; cin = 0; #10;
+        if (sum === 0 && cout === 1) $display("110 Correct");
+        
+        a = 1; b = 1; cin = 1; #10;
+        if (sum === 1 && cout === 1) $display("111 Correct");
+    end
+    
+endmodule
